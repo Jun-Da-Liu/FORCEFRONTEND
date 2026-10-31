@@ -144,6 +144,31 @@
       </div>
     </section>
 
+    <section class="card dash-recent">
+      <div class="card__head">
+        <h3 class="card__title">Recently migrated pages</h3>
+        <el-tag type="success" size="small" effect="plain">{{ recentPages.length }} pages</el-tag>
+      </div>
+      <div class="card__body">
+        <el-table :data="recentPages" size="small" stripe>
+          <el-table-column label="Page" min-width="220">
+            <template #default="{ row }">
+              <router-link class="recent-page-link" :to="row.route">{{ row.name }}</router-link>
+              <div class="recent-page-description">{{ row.description }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="module" label="Module" min-width="120" />
+          <el-table-column prop="changeType" label="Change" width="100" />
+          <el-table-column prop="updatedAt" label="Updated" width="120" />
+          <el-table-column label="Status" width="100">
+            <template #default="{ row }">
+              <el-tag type="success" size="small" effect="plain">{{ row.status }}</el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </section>
+
     <section class="dash-bottom">
       <div class="card">
         <div class="card__head">
@@ -198,6 +223,7 @@ import {
 } from "@element-plus/icons-vue";
 import { useOnlineCount } from "@/composables";
 import { appConfig } from "@/settings";
+import { recentPages } from "@/data/recentPages";
 
 const userStore = useUserStore();
 const settingsStore = useSettingsStore();
@@ -386,6 +412,11 @@ $pad: 10px;
 }
 
 .dash-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: $gap; }
+
+.dash-recent { @extend %card; }
+.recent-page-link { font-weight: 500; color: var(--el-color-primary); text-decoration: none; }
+.recent-page-link:hover { text-decoration: underline; }
+.recent-page-description { margin-top: 2px; font-size: 12px; color: var(--el-text-color-secondary); }
 
 .stat-card { display: flex; gap: 14px; align-items: center; min-height: 84px; padding: 18px; @extend %card;
   &__icon { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 10px;

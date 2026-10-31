@@ -6,7 +6,7 @@ import i18n from "@/lang";
 import { ElMessageBox } from "element-plus";
 
 import MenuAPI from "@/api/system/menu";
-const modules = import.meta.glob("../views/**/**.vue");
+const modules = import.meta.glob(["../views/**/**.vue", "!../views/oldPage/**"]);
 const Layout = () => import("../layouts/index.vue");
 
 function resolveViewComponent(componentPath) {
@@ -37,6 +37,7 @@ export const usePermissionStore = defineStore("permission", () => {
 
       routes.value = [...constantRoutes, ...dynamicRoutes];
       isRouteGenerated.value = true;
+      logMenuTree(dynamicRoutes);
 
       return dynamicRoutes;
     } catch (error) {
@@ -134,6 +135,25 @@ export const usePermissionStore = defineStore("permission", () => {
  * 转换后端路由数据为Vue Router配置
  * 处理组件路径映射和Layout层级嵌套
  */
+function logMenuTree(menus) {
+  const lines = ["[Menu tree]"];
+
+  function appendNodes(nodes, prefix = "") {
+    nodes.forEach((node, index) => {
+      const isLast = index === nodes.length - 1;
+      const branch = isLast ? "└── " : "├── ";
+      lines.push(`${prefix}${branch}${node.meta?.title || node.name} [${node.path}]`);
+
+      if (node.children?.length) {
+        appendNodes(node.children, `${prefix}${isLast ? "    " : "│   "}`);
+      }
+    });
+  }
+
+  appendNodes(menus);
+  // console.log(lines.join("\n"));
+}
+
 const transformRoutes = (routes, isTopLevel = true) => {
   return routes.map((route) => {
     const { component, children, ...args } = route;
