@@ -1,0 +1,66 @@
+import request from "@/utils/request";
+
+const AUTH_BASE_URL = "/api/v1/auth";
+
+const AuthAPI = {
+  /** 登录接口*/
+  login(data) {
+    const payload = {
+      username: data.username,
+      password: data.password,
+    };
+
+    // tenantId is optional — include only when provided (multi-tenant feature)
+    if (typeof data.tenantId !== "undefined") {
+      payload.tenantId = data.tenantId;
+    }
+
+    return request({
+      url: `${AUTH_BASE_URL}/login`,
+      method: "post",
+      data: payload,
+      headers: {
+        Authorization: "no-auth",
+      },
+    });
+  },
+
+  /** 切换租户(平台用户) - 返回新的 token */
+  switchTenant(tenantId) {
+    return request({
+      url: `${AUTH_BASE_URL}/switch-tenant`,
+      method: "post",
+      params: { tenantId },
+    });
+  },
+
+  /** 刷新 token 接口*/
+  refreshToken(refreshToken) {
+    return request({
+      url: `${AUTH_BASE_URL}/refresh-token`,
+      method: "post",
+      params: { refreshToken },
+      headers: {
+        Authorization: "no-auth",
+      },
+    });
+  },
+
+  // The backend logout endpoint is not available yet.
+  // logout() {
+  //   return request({
+  //     url: `${AUTH_BASE_URL}/logout`,
+  //     method: "delete",
+  //   });
+  // },
+
+  // Captcha is not available on the backend yet.
+  // getCaptcha() {
+  //   return request({
+  //     url: `${AUTH_BASE_URL}/captcha`,
+  //     method: "get",
+  //   });
+  // },
+};
+
+export default AuthAPI;
